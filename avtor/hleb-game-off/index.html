@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hleb Game — страница автора</title>
-    <!-- Шрифт Unbounded -->
+    <title>Hleb Game Official — страница автора</title>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -12,7 +11,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: #0a0c10;
             font-family: 'Unbounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -20,8 +18,6 @@
             line-height: 1.4;
             overflow-x: hidden;
         }
-
-        /* анимированный градиентный фон */
         .animated-bg {
             position: fixed;
             top: 0;
@@ -31,8 +27,6 @@
             z-index: -2;
             background: radial-gradient(circle at 20% 30%, #0f1219, #030507);
         }
-
-        /* эффект сетки */
         .grid-overlay {
             position: fixed;
             top: 0;
@@ -46,7 +40,6 @@
             z-index: -1;
             pointer-events: none;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -54,24 +47,14 @@
             position: relative;
             z-index: 2;
         }
-
-        /* анимация появления */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes glowPulse {
             0% { text-shadow: 0 0 5px rgba(255,215,0,0.3); }
             100% { text-shadow: 0 0 20px rgba(255,215,0,0.7); }
         }
-
         .hero {
             display: flex;
             flex-direction: column;
@@ -80,8 +63,6 @@
             margin-bottom: 2.5rem;
             animation: fadeInUp 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
         }
-
-        /* аватар автора */
         .author-avatar {
             width: 140px;
             height: 140px;
@@ -105,7 +86,6 @@
             height: auto;
             filter: drop-shadow(0 0 8px rgba(218, 165, 32, 0.4));
         }
-
         h1 {
             font-size: clamp(2.2rem, 7vw, 4rem);
             font-weight: 800;
@@ -116,7 +96,6 @@
             color: transparent;
             margin-bottom: 0.75rem;
         }
-
         .author-badge {
             font-size: 0.8rem;
             background: rgba(228, 179, 99, 0.15);
@@ -127,7 +106,6 @@
             color: #e4b363;
             font-weight: 500;
         }
-
         .section-title {
             font-size: 1.5rem;
             font-weight: 600;
@@ -137,8 +115,6 @@
             border-left: 3px solid #e4b363;
             padding-left: 1rem;
         }
-
-        /* карточки игр */
         .games-grid {
             display: flex;
             flex-wrap: wrap;
@@ -146,7 +122,6 @@
             gap: 2rem;
             margin: 1rem 0 1rem;
         }
-
         .game-card {
             background: rgba(18, 22, 32, 0.7);
             backdrop-filter: blur(12px);
@@ -160,14 +135,12 @@
             animation: fadeInUp 0.7s ease backwards;
             box-shadow: 0 12px 28px -8px rgba(0,0,0,0.5);
         }
-
         .game-card:hover {
             transform: translateY(-8px) scale(1.02);
             border-color: rgba(228, 179, 99, 0.7);
             background: rgba(25, 30, 42, 0.85);
             box-shadow: 0 25px 35px -12px rgba(0,0,0,0.6);
         }
-
         .game-image {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -176,7 +149,6 @@
             margin-bottom: 1rem;
             background: #0f121b;
         }
-
         .game-image img {
             width: 100%;
             height: 100%;
@@ -184,11 +156,9 @@
             display: block;
             transition: transform 0.3s ease;
         }
-
         .game-card:hover .game-image img {
             transform: scale(1.02);
         }
-
         .game-title {
             font-size: 1.4rem;
             font-weight: 700;
@@ -198,7 +168,6 @@
             color: transparent;
             margin-bottom: 0.8rem;
         }
-
         .game-link {
             display: inline-block;
             background: rgba(228, 179, 99, 0.12);
@@ -211,14 +180,12 @@
             font-size: 0.75rem;
             transition: all 0.25s;
         }
-
         .game-link:hover {
             background: #e4b363;
             color: #0a0c10;
             border-color: #e4b363;
             box-shadow: 0 0 12px rgba(228,179,99,0.5);
         }
-
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -233,13 +200,13 @@
             font-weight: 500;
             border: 1px solid rgba(228, 179, 99, 0.3);
             transition: all 0.2s;
+            cursor: pointer;
         }
         .back-link:hover {
             background: rgba(228, 179, 99, 0.2);
             border-color: #e4b363;
             color: #e4b363;
         }
-
         .glow-spot {
             position: fixed;
             width: 70vw;
@@ -251,13 +218,11 @@
             top: -20%;
             right: -20%;
         }
-
         .glow-spot-2 {
             bottom: -30%;
             left: -20%;
             background: radial-gradient(circle, rgba(80,120,200,0.06) 0%, rgba(0,0,0,0) 70%);
         }
-
         footer {
             text-align: center;
             margin-top: 3rem;
@@ -266,22 +231,11 @@
             border-top: 1px solid rgba(228,179,99,0.2);
             padding-top: 2rem;
         }
-
         @media (max-width: 650px) {
-            .container {
-                padding: 2rem 1.2rem;
-            }
-            .game-card {
-                width: 100%;
-                max-width: 280px;
-            }
-            .author-avatar {
-                width: 110px;
-                height: 110px;
-            }
-            .avatar-svg {
-                width: 75px;
-            }
+            .container { padding: 2rem 1.2rem; }
+            .game-card { width: 100%; max-width: 280px; }
+            .author-avatar { width: 110px; height: 110px; }
+            .avatar-svg { width: 75px; }
         }
     </style>
 </head>
@@ -292,15 +246,11 @@
 <div class="glow-spot glow-spot-2"></div>
 
 <div class="container">
-    <!-- кнопка назад на главную HLEB GAME (обновлённая ссылка) -->
-    <a href="https://efatcat.github.io/hleb" class="back-link" target="_blank">
-        ← На главную HLEB GAME
-    </a>
+    <div class="back-link" id="backToHomeBtn">← На главную HLEB GAME</div>
 
     <div class="hero">
         <div class="author-avatar">
             <div class="avatar-svg" id="authorAvatarPlaceholder">
-                <!-- SVG-логотип платформы как заглушка для аватара автора -->
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0,0,86.0736,117.41747" style="width:100%;height:auto;">
                     <g transform="translate(-197.48673,-136.23229)">
                         <g fill-rule="nonzero" stroke="none">
@@ -324,11 +274,8 @@
         <div class="author-badge">✦ автор платформы HLEB ✦</div>
     </div>
 
-    <!-- Только блок "Игры" (переименован) -->
     <div class="section-title">✦ Игры</div>
-    <div class="games-grid" id="authorGamesGrid">
-        <!-- игры будут подгружаться динамически через JS -->
-    </div>
+    <div class="games-grid" id="authorGamesGrid"></div>
 
     <footer>
         <span>HLEB GAME © 2025 — система ИИ-игр</span><br>
@@ -338,13 +285,9 @@
 
 <script>
     (function() {
-        // ========== НАСТРОЙКИ АВТОРА (меняй здесь для других авторов) ==========
-        // Поменяй имя автора, аватар (svg-код или картинка) и список игр.
         const authorConfig = {
             name: "Hleb Game Official",
-            // Можно заменить аватар на картинку: avatarType: "image", avatarSrc: "ссылка на картинку"
-            // По умолчанию оставляем SVG-логотип (можно заменить на другой SVG или картинку)
-            avatarType: "svg",   // "svg" или "image"
+            avatarType: "svg",
             avatarSvg: `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0,0,86.0736,117.41747" style="width:100%;height:auto;">
                     <g transform="translate(-197.48673,-136.23229)">
                         <g fill-rule="nonzero" stroke="none">
@@ -362,7 +305,6 @@
                         </g>
                     </g>
                 </svg>`,
-            // Список игр автора (каждый объект: title, url, image (можно null), fallbackIcon)
             games: [
                 {
                     title: "Kolblocks",
@@ -375,24 +317,24 @@
                     url: "https://efatcat.github.io/TheThingGame",
                     image: null,
                     fallbackIcon: "💰"
+                },
+                {
+                    title: "Angry Cat 3",
+                    url: "https://efatcat.github.io/angry-cat-3",
+                    image: "https://i.oneme.ru/i?r=BTE2sh_eZW7g8kugOdIm2NotAxFB8AXCMLTnV_GUSxeSmDL_i6iagkBC3ooC5OrownA",
+                    fallbackIcon: "😾"
                 }
             ]
         };
-        // =====================================================================
 
-        // Применяем имя автора
         const authorNameEl = document.getElementById('authorName');
         if (authorNameEl) authorNameEl.textContent = authorConfig.name;
 
-        // Настройка аватара
         const avatarContainer = document.getElementById('authorAvatarPlaceholder');
         if (avatarContainer && authorConfig.avatarType === "svg" && authorConfig.avatarSvg) {
             avatarContainer.innerHTML = authorConfig.avatarSvg;
-        } else if (avatarContainer && authorConfig.avatarType === "image" && authorConfig.avatarSrc) {
-            avatarContainer.innerHTML = `<img src="${authorConfig.avatarSrc}" alt="avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         }
 
-        // Рендер игр (без лишних меток "ИИ механики" и "авторский проект")
         const gamesContainer = document.getElementById('authorGamesGrid');
         if (gamesContainer) {
             gamesContainer.innerHTML = '';
@@ -401,7 +343,6 @@
                 card.className = 'game-card';
                 card.style.animationDelay = `${idx * 0.08}s`;
                 
-                // изображение
                 const imgDiv = document.createElement('div');
                 imgDiv.className = 'game-image';
                 if (game.image) {
@@ -432,7 +373,6 @@
                 card.appendChild(titleDiv);
                 card.appendChild(linkBtn);
                 
-                // клик по карточке (кроме клика по кнопке)
                 card.addEventListener('click', (e) => {
                     if (e.target === linkBtn || linkBtn.contains(e.target)) return;
                     window.open(game.url, '_blank', 'noopener,noreferrer');
@@ -442,7 +382,13 @@
             });
         }
 
-        // эффект движения блика
+        const backBtn = document.getElementById('backToHomeBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                window.location.href = 'https://efatcat.github.io/hleb';
+            });
+        }
+
         const glowSpot = document.querySelector('.glow-spot');
         if (glowSpot) {
             document.addEventListener('mousemove', (e) => {
