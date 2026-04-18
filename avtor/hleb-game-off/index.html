@@ -86,6 +86,15 @@
             height: auto;
             filter: drop-shadow(0 0 8px rgba(218, 165, 32, 0.4));
         }
+        /* Стили для имени с галочкой */
+        .author-name-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
         h1 {
             font-size: clamp(2.2rem, 7vw, 4rem);
             font-weight: 800;
@@ -94,7 +103,21 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0;
+        }
+        .verified-icon {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            background-image: url('galka.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(0 0 4px rgba(228, 179, 99, 0.6));
+            transition: transform 0.2s ease;
+        }
+        .verified-icon:hover {
+            transform: scale(1.1);
         }
         .author-badge {
             font-size: 0.8rem;
@@ -236,6 +259,8 @@
             .game-card { width: 100%; max-width: 280px; }
             .author-avatar { width: 110px; height: 110px; }
             .avatar-svg { width: 75px; }
+            .verified-icon { width: 1.5rem; height: 1.5rem; }
+            .author-name-wrapper { gap: 0.5rem; }
         }
     </style>
 </head>
@@ -270,7 +295,10 @@
                 </svg>
             </div>
         </div>
-        <h1 id="authorName">Hleb Game Official</h1>
+        <div class="author-name-wrapper">
+            <h1 id="authorName">Hleb Game Official</h1>
+            <img src="galka.png" alt="Verified" class="verified-icon" title="Верифицированный автор" onerror="this.style.display='none'">
+        </div>
         <div class="author-badge">✦ автор платформы HLEB ✦</div>
     </div>
 
@@ -278,7 +306,7 @@
     <div class="games-grid" id="authorGamesGrid"></div>
 
     <footer>
-        <span>HLEB GAME © 2026 — система ИИ-игр</span><br>
+        <span>HLEB GAME © 2025 — система ИИ-игр</span><br>
         <span style="font-size: 0.65rem;">нейросетевая платформа · каталог авторов</span>
     </footer>
 </div>
@@ -320,7 +348,7 @@
                 },
                 {
                     title: "Angry Cat 3",
-                    url: "https://efatcat.github.io/acat3",
+                    url: "https://efatcat.github.io/angrycat3",
                     image: "https://i.oneme.ru/i?r=BTE2sh_eZW7g8kugOdIm2NotAxFB8AXCMLTnV_GUSxeSmDL_i6iagkBC3ooC5OrownA",
                     fallbackIcon: "😾"
                 }
