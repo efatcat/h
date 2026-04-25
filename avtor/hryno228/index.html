@@ -1,1 +1,404 @@
-Автор - hryno228
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вселенная Чашелиста — галерея существ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Unbounded', cursive, sans-serif;
+            background: #f5f3f0;
+            color: #1e1b16;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* заголовок */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #2c2418;
+            margin-bottom: 0.5rem;
+        }
+
+        /* галерея — сетка */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.8rem;
+        }
+
+        /* карточка существа */
+        .creature-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem 1rem 1.2rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e0d5;
+            cursor: pointer;
+        }
+
+        .creature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #cbbfaa;
+        }
+
+        /* контейнер для SVG */
+        .svg-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .creature-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #2c2418;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .variant-note {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #8b7a64;
+            margin-top: 0.25rem;
+        }
+
+        /* подвал минимальный */
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #b9aa95;
+            border-top: 1px solid #e3d9ce;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 550px) {
+            body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .gallery {
+                gap: 1rem;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            .svg-container {
+                width: 90px;
+                height: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Вселенная Чашелиста</h1>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+    <div class="footer">
+        галерея существ • каждый персонаж имеет свой SVG-символ
+    </div>
+</div>
+
+<script>
+    // список всех существ с учётом вариантов имён (но для файлов используем базовый slug)
+    // В задании сказано: для каждого существа - svg. (cheshelist.svg, pukozvuk.svg и т.д.)
+    // поэтому генерируем имена файлов строго по первому основному варианту, но отображаем полные названия.
+    const creatures = [
+        { main: "Чашелист", variants: "Чешелист", slug: "cheshelist" },
+        { main: "Пукозвук", variants: null, slug: "pukozvuk" },
+        { main: "Пакет для яичек", variants: null, slug: "paket-dlya-yaichek" },
+        { main: "Тохтамыш", variants: null, slug: "toxtamysh" },
+        { main: "Железный Тимур", variants: null, slug: "zheleznyy-timur" },
+        { main: "Цветоножка", variants: null, slug: "tsvetonozhka" },
+        { main: "Чашеяичко", variants: null, slug: "chasheyaichko" },
+        { main: "Смесси", variants: null, slug: "smessi" },
+        { main: "Большое Гнездо", variants: null, slug: "bolshoe-gnezdo" },
+        { main: "Августул", variants: "Августульчик", slug: "avgustul" },
+        { main: "Пума", variants: null, slug: "puma" },
+        { main: "Акварель", variants: null, slug: "akvarel" },
+        { main: "Манул", variants: null, slug: "manul" },
+        { main: "Пончара", variants: null, slug: "ponchara" },
+        { main: "Ваниль", variants: null, slug: "vanil" },
+        { main: "Кокос", variants: null, slug: "kokos" },
+        { main: "Завр", variants: null, slug: "zavr" },
+        { main: "Поросяток", variants: "Петросяток / Петросянок / Поросянок", slug: "porosyatok" },
+        { main: "Лазанья", variants: null, slug: "lazanya" },
+        { main: "Хрюнозавр", variants: null, slug: "hryunozavr" }
+    ];
+
+    // Функция генерации уникального SVG для каждого существа на основе его имени и символики
+    function generateSVG(slug, name) {
+        // Цветовая палитра для разных персонажей (на основе хэша)
+        const hue = (slug.length * 37 + slug.charCodeAt(0) * 13) % 360;
+        const mainColor = `hsl(${hue}, 70%, 55%)`;
+        const lightColor = `hsl(${hue}, 65%, 75%)`;
+        const darkColor = `hsl(${hue}, 75%, 35%)`;
+        const accentColor = `hsl(${hue + 40}, 80%, 60%)`;
+
+        // Создаём SVG в зависимости от "характера" существа через slug
+        if (slug === "cheshelist") {
+            // Чашелист — цветочная чашечка + лист
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="55" r="28" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M50 27 L50 10 L42 18 L58 18 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <path d="M50 55 L35 75 M50 55 L65 75" stroke="${darkColor}" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="6" fill="${accentColor}"/>
+                <path d="M22 50 L12 40 M78 50 L88 40" stroke="${mainColor}" stroke-width="2" stroke-linecap="round"/>
+            </svg>`;
+        }
+        else if (slug === "pukozvuk") {
+            // Пукозвук — звуковые волны + пузырёк
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="30" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M35 45 Q50 30 65 45" fill="none" stroke="${mainColor}" stroke-width="3" stroke-linecap="round"/>
+                <path d="M32 55 Q50 70 68 55" fill="none" stroke="${mainColor}" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="8" fill="${accentColor}"/>
+                <path d="M50 42 L50 35 M50 65 L50 58" stroke="${darkColor}" stroke-width="2"/>
+            </svg>`;
+        }
+        else if (slug === "paket-dlya-yaichek") {
+            // Пакет для яичек — пакет + яйца
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect x="30" y="35" width="40" height="45" rx="6" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M40 80 L40 92 M60 80 L60 92" stroke="${darkColor}" stroke-width="2.5"/>
+                <ellipse cx="43" cy="55" rx="8" ry="10" fill="${accentColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <ellipse cx="57" cy="55" rx="8" ry="10" fill="${accentColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <path d="M35 35 L50 20 L65 35" fill="${mainColor}" stroke="${darkColor}" stroke-width="1.5"/>
+            </svg>`;
+        }
+        else if (slug === "toxtamysh") {
+            // Тохтамыш — восточный шлем / воин
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 55 L50 20 L70 55 L65 75 L35 75 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="50" cy="48" r="6" fill="${accentColor}"/>
+                <path d="M40 65 L60 65" stroke="${darkColor}" stroke-width="2.5"/>
+                <path d="M25 55 L15 45 M75 55 L85 45" stroke="${lightColor}" stroke-width="2"/>
+            </svg>`;
+        }
+        else if (slug === "zheleznyy-timur") {
+            // Железный Тимур — металлическая маска
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect x="28" y="30" width="44" height="46" rx="12" fill="${mainColor}" stroke="${darkColor}" stroke-width="2.5"/>
+                <circle cx="40" cy="48" r="5" fill="white" stroke="${darkColor}"/>
+                <circle cx="60" cy="48" r="5" fill="white" stroke="${darkColor}"/>
+                <path d="M42 62 Q50 70 58 62" fill="none" stroke="${darkColor}" stroke-width="2"/>
+                <rect x="44" y="32" width="12" height="8" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else if (slug === "tsvetonozhka") {
+            // Цветоножка — цветок на стебле
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 80 L50 50" stroke="${darkColor}" stroke-width="3"/>
+                <circle cx="50" cy="45" r="14" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="50" cy="45" r="5" fill="${accentColor}"/>
+                <path d="M38 40 L28 32 M62 40 L72 32" stroke="${mainColor}" stroke-width="2.5"/>
+            </svg>`;
+        }
+        else if (slug === "chasheyaichko") {
+            // Чашеяичко — чашечка с яйцом
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="40" rx="22" ry="28" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M30 58 L20 70 L80 70 L70 58" fill="${mainColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <circle cx="50" cy="38" r="5" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else if (slug === "smessi") {
+            // Смесси — дружелюбное пятнистое существо
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="55" r="28" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="38" cy="48" r="4" fill="white"/>
+                <circle cx="62" cy="48" r="4" fill="white"/>
+                <path d="M43 68 Q50 76 57 68" fill="none" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="50" cy="30" r="5" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else if (slug === "bolshoe-gnezdo") {
+            // Большое Гнездо — гнездо с ветками
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="55" rx="35" ry="20" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M20 55 L10 45 M80 55 L90 45 M30 65 L25 80 M70 65 L75 80" stroke="${lightColor}" stroke-width="2.5"/>
+                <circle cx="50" cy="52" r="7" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else if (slug === "avgustul") {
+            // Августул — маленькая звёздочка
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="50,20 58,40 80,42 63,55 68,78 50,65 32,78 37,55 20,42 42,40" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="50" cy="48" r="5" fill="${lightColor}"/>
+            </svg>`;
+        }
+        else if (slug === "puma") {
+            // Пума — кошачья морда
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="55" r="30" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M35 45 L28 35 M65 45 L72 35" stroke="${darkColor}" stroke-width="2.5"/>
+                <circle cx="38" cy="52" r="4" fill="${darkColor}"/>
+                <circle cx="62" cy="52" r="4" fill="${darkColor}"/>
+                <path d="M44 68 Q50 76 56 68" fill="none" stroke="${darkColor}" stroke-width="2"/>
+            </svg>`;
+        }
+        else if (slug === "akvarel") {
+            // Акварель — капли и волна
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 55 Q40 35 55 55 Q70 75 85 55" fill="none" stroke="${mainColor}" stroke-width="3"/>
+                <circle cx="35" cy="45" r="8" fill="${lightColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <circle cx="65" cy="65" r="8" fill="${lightColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="4" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else if (slug === "manul") {
+            // Манул — пушистый круглый зверь
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="55" rx="32" ry="27" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="38" cy="50" r="5" fill="white"/>
+                <circle cx="62" cy="50" r="5" fill="white"/>
+                <circle cx="40" cy="51" r="2" fill="black"/>
+                <circle cx="64" cy="51" r="2" fill="black"/>
+                <path d="M45 68 Q55 74 65 65" fill="none" stroke="${darkColor}" stroke-width="2"/>
+            </svg>`;
+        }
+        else if (slug === "ponchara") {
+            // Пончара — пончо / накидка
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 75 L50 35 L70 75 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="50" cy="50" r="7" fill="${lightColor}" stroke="${darkColor}"/>
+                <path d="M40 65 L60 65" stroke="${darkColor}" stroke-width="2"/>
+            </svg>`;
+        }
+        else if (slug === "vanil") {
+            // Ваниль — стручок ванили / цветок
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect x="45" y="25" width="10" height="50" rx="5" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M38 25 Q50 12 62 25" fill="${lightColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <circle cx="50" cy="65" r="5" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else if (slug === "kokos") {
+            // Кокос — кокосовый орех
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="55" r="28" fill="#D2B48C" stroke="#8B5A2B" stroke-width="2"/>
+                <circle cx="50" cy="48" r="8" fill="#F5DEB3" stroke="#8B5A2B" stroke-width="1.5"/>
+                <path d="M50 27 L50 15" stroke="${darkColor}" stroke-width="3"/>
+            </svg>`;
+        }
+        else if (slug === "zavr") {
+            // Завр — динозаврик
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="45" cy="60" rx="20" ry="15" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M64 55 L80 45 L72 63 Z" fill="${lightColor}" stroke="${darkColor}"/>
+                <circle cx="38" cy="52" r="4" fill="white"/>
+                <circle cx="38" cy="52" r="2" fill="black"/>
+            </svg>`;
+        }
+        else if (slug === "porosyatok") {
+            // Поросяток — пятачок + уши
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="55" r="28" fill="${lightColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="41" cy="50" r="3" fill="${darkColor}"/>
+                <circle cx="59" cy="50" r="3" fill="${darkColor}"/>
+                <ellipse cx="50" cy="64" rx="9" ry="6" fill="${accentColor}" stroke="${darkColor}" stroke-width="1.5"/>
+                <path d="M26 49 L18 42 M74 49 L82 42" stroke="${darkColor}" stroke-width="2.5"/>
+            </svg>`;
+        }
+        else if (slug === "lazanya") {
+            // Лазанья — слоистая текстура
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect x="28" y="30" width="44" height="40" rx="6" fill="#E3C194" stroke="#A57C4C" stroke-width="2"/>
+                <path d="M32 40 L68 40 M32 50 L68 50 M32 60 L68 60" stroke="#D89E5A" stroke-width="2.5"/>
+                <circle cx="50" cy="45" r="3" fill="#C44A2C"/>
+            </svg>`;
+        }
+        else if (slug === "hryunozavr") {
+            // Хрюнозавр — гибрид поросёнка и динозавра
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="60" rx="25" ry="18" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M32 48 L22 38 L38 44 Z" fill="${lightColor}" stroke="${darkColor}"/>
+                <circle cx="42" cy="54" r="3" fill="black"/>
+                <circle cx="58" cy="54" r="3" fill="black"/>
+                <ellipse cx="50" cy="66" rx="7" ry="4" fill="${accentColor}"/>
+            </svg>`;
+        }
+        else {
+            // Дефолтный универсальный SVG
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="35" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="36" cy="44" r="4" fill="white"/>
+                <circle cx="64" cy="44" r="4" fill="white"/>
+                <path d="M42 64 Q50 72 58 64" fill="none" stroke="${darkColor}" stroke-width="2.5"/>
+            </svg>`;
+        }
+    }
+
+    // рендер галереи
+    const gallery = document.getElementById('gallery');
+    
+    creatures.forEach(creature => {
+        const card = document.createElement('div');
+        card.className = 'creature-card';
+        
+        // блок SVG
+        const svgContainer = document.createElement('div');
+        svgContainer.className = 'svg-container';
+        const svgString = generateSVG(creature.slug, creature.main);
+        svgContainer.innerHTML = svgString;
+        
+        // имя
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'creature-name';
+        if (creature.variants) {
+            nameDiv.innerHTML = `${creature.main} <span class="variant-note">(${creature.variants})</span>`;
+        } else {
+            nameDiv.textContent = creature.main;
+        }
+        
+        card.appendChild(svgContainer);
+        card.appendChild(nameDiv);
+        
+        // клик — вывод в консоль (имитация нажатия на ссылку, без реального перехода)
+        card.addEventListener('click', () => {
+            console.log(`🚀 [Вселенная Чашелиста] нажато существо: ${creature.main} (svg: ${creature.slug}.svg) — ссылка-заглушка`);
+        });
+        
+        gallery.appendChild(card);
+    });
+    
+    // дополнительное сообщение в консоль о генерации SVG-галереи
+    console.log('🌿 Галерея Вселенной Чашелиста загружена. У каждого существа уникальный SVG. Файлы: cheshelist.svg, pukozvuk.svg и другие по slug.');
+</script>
+</body>
+</html>
