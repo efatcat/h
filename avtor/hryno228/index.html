@@ -16,6 +16,10 @@
             font-family: 'Unbounded', cursive, sans-serif;
             background: #f5f3f0;
             color: #1e1b16;
+            min-height: 100vh;
+        }
+
+        .gallery-page {
             padding: 2rem 1.5rem;
         }
 
@@ -24,7 +28,6 @@
             margin: 0 auto;
         }
 
-        /* заголовок */
         .header {
             text-align: center;
             margin-bottom: 3rem;
@@ -38,14 +41,17 @@
             margin-bottom: 0.5rem;
         }
 
-        /* галерея — сетка */
+        .subhead {
+            color: #8b7a64;
+            font-size: 0.9rem;
+        }
+
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1.8rem;
         }
 
-        /* карточка существа */
         .creature-card {
             background: white;
             border-radius: 1.5rem;
@@ -63,7 +69,6 @@
             border-color: #cbbfaa;
         }
 
-        /* контейнер для SVG */
         .svg-container {
             width: 120px;
             height: 120px;
@@ -85,8 +90,6 @@
             font-weight: 600;
             font-size: 1rem;
             color: #2c2418;
-            word-break: break-word;
-            line-height: 1.3;
         }
 
         .variant-note {
@@ -96,7 +99,6 @@
             margin-top: 0.25rem;
         }
 
-        /* подвал минимальный */
         .footer {
             margin-top: 3rem;
             text-align: center;
@@ -106,8 +108,96 @@
             padding-top: 1.5rem;
         }
 
-        @media (max-width: 550px) {
-            body {
+        /* ========= СТРАНИЦА ПЕРСОНАЖА (упрощённая, без статов) ========= */
+        .character-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            font-family: 'Unbounded', cursive;
+            font-size: 0.9rem;
+            color: #8b7a64;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            padding: 0.5rem 0;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #2c2418;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8e0d5;
+            text-align: center;
+        }
+
+        .character-svg {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .character-svg img,
+        .character-svg svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .character-title h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c2418;
+            margin-bottom: 0.5rem;
+        }
+
+        .character-title .aliases {
+            color: #8b7a64;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .character-description {
+            margin: 1.5rem 0;
+        }
+
+        .character-description p {
+            font-style: italic;
+            color: #8b7a64;
+            background: #f9f7f4;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .placeholder-badge {
+            display: inline-block;
+            background: #f0ede8;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #8b7a64;
+            margin-left: 0.5rem;
+            font-family: monospace;
+        }
+
+        @media (max-width: 650px) {
+            .character-title h2 {
+                font-size: 1.6rem;
+            }
+            .gallery-page {
                 padding: 1rem;
             }
             h1 {
@@ -121,167 +211,145 @@
                 width: 90px;
                 height: 90px;
             }
+            .character-svg {
+                width: 120px;
+                height: 120px;
+            }
         }
     </style>
 </head>
-<body>
-<div class="container">
-    <div class="header">
-        <h1>Вселенная Чашелиста</h1>
-    </div>
+<body id="app">
+    <div id="root"></div>
 
-    <div class="gallery" id="gallery"></div>
-    <div class="footer">
-        галерея существ • каждый персонаж имеет свой SVG-символ
-    </div>
-</div>
+    <script>
+        // ============================================================
+        // ДАННЫЕ О ПЕРСОНАЖАХ
+        // ============================================================
+        const SVG_PATH = "./";
 
-<script>
-    // ============================================================
-    // ГАЛЕРЕЯ С ЗАГРУЗКОЙ SVG ИЗ ПАПКИ
-    // ============================================================
-    // Чтобы заменить SVG на свои:
-    // 1. Поместите свои SVG-файлы в ту же папку, что и HTML (или укажите путь ниже)
-    // 2. Имена файлов должны строго соответствовать полю "filename" (см. список)
-    // 3. Обновите страницу — ваши SVG загрузятся автоматически
-    //
-    // Если файл не найден (404), покажется сгенерированная цветная заглушка с символом
-    // ============================================================
+        // Короткая заглушка для описания
+        const PLACEHOLDER_TEXT = "тут скоро будет описание";
 
-    // ПУТЬ К SVG-ФАЙЛАМ (можно изменить, например "icons/" или "./")
-    // По умолчанию файлы лежат рядом с HTML. Если хотите папку — раскомментируйте нужную строку
-    const SVG_PATH = "./";    // текущая папка (рядом с HTML)
-    // const SVG_PATH = "icons/";   // если сложите файлы в папку icons
+        const creatures = [
+            { slug: "cheshelist", main: "Чашелист", variants: "Чешелист" },
+            { slug: "pukozvuk", main: "Пукозвук", variants: null },
+            { slug: "paket-dlya-yaichek", main: "Пакет для яичек", variants: null },
+            { slug: "toxtamysh", main: "Тохтамыш", variants: null },
+            { slug: "zheleznyy-timur", main: "Железный Тимур", variants: null },
+            { slug: "tsvetonozhka", main: "Цветоножка", variants: null },
+            { slug: "chasheyaichko", main: "Чашеяичко", variants: null },
+            { slug: "smessi", main: "Смесси", variants: null },
+            { slug: "bolshoe-gnezdo", main: "Большое Гнездо", variants: null },
+            { slug: "avgustul", main: "Августул", variants: "Августульчик" },
+            { slug: "puma", main: "Пума", variants: null },
+            { slug: "akvarel", main: "Акварель", variants: null },
+            { slug: "manul", main: "Манул", variants: null },
+            { slug: "ponchara", main: "Пончара", variants: null },
+            { slug: "vanil", main: "Ваниль", variants: null },
+            { slug: "kokos", main: "Кокос", variants: null },
+            { slug: "zavr", main: "Завр", variants: null },
+            { slug: "porosyatok", main: "Поросяток", variants: "Петросяток / Петросянок / Поросянок" },
+            { slug: "lazanya", main: "Лазанья", variants: null },
+            { slug: "hryunozavr", main: "Хрюнозавр", variants: null }
+        ];
 
-    // Список всех существ: отображаемое имя, варианты, имя файла (без расширения)
-    const creatures = [
-        { main: "Чашелист", variants: "Чешелист", filename: "cheshelist" },
-        { main: "Пукозвук", variants: null, filename: "pukozvuk" },
-        { main: "Пакет для яичек", variants: null, filename: "paket-dlya-yaichek" },
-        { main: "Тохтамыш", variants: null, filename: "toxtamysh" },
-        { main: "Железный Тимур", variants: null, filename: "zheleznyy-timur" },
-        { main: "Цветоножка", variants: null, filename: "tsvetonozhka" },
-        { main: "Чашеяичко", variants: null, filename: "chasheyaichko" },
-        { main: "Смесси", variants: null, filename: "smessi" },
-        { main: "Большое Гнездо", variants: null, filename: "bolshoe-gnezdo" },
-        { main: "Августул", variants: "Августульчик", filename: "avgustul" },
-        { main: "Пума", variants: null, filename: "puma" },
-        { main: "Акварель", variants: null, filename: "akvarel" },
-        { main: "Манул", variants: null, filename: "manul" },
-        { main: "Пончара", variants: null, filename: "ponchara" },
-        { main: "Ваниль", variants: null, filename: "vanil" },
-        { main: "Кокос", variants: null, filename: "kokos" },
-        { main: "Завр", variants: null, filename: "zavr" },
-        { main: "Поросяток", variants: "Петросяток / Петросянок / Поросянок", filename: "porosyatok" },
-        { main: "Лазанья", variants: null, filename: "lazanya" },
-        { main: "Хрюнозавр", variants: null, filename: "hryunozavr" }
-    ];
-
-    // Функция генерации красивой заглушки (если свой SVG не загрузился)
-    // Цвета зависят от имени файла, чтобы у каждого персонажа был уникальный стиль
-    function generateFallbackSVG(filename, creatureName) {
-        // Генерируем уникальный оттенок на основе filename
-        let hash = 0;
-        for (let i = 0; i < filename.length; i++) {
-            hash = ((hash << 5) - hash) + filename.charCodeAt(i);
-            hash |= 0;
-        }
-        const hue = Math.abs(hash % 360);
-        const mainColor = `hsl(${hue}, 70%, 55%)`;
-        const lightColor = `hsl(${hue}, 60%, 75%)`;
-        const darkColor = `hsl(${hue}, 75%, 35%)`;
-        const accentColor = `hsl(${hue + 40}, 75%, 55%)`;
-
-        // Универсальная милая мордочка — чтобы заглушка выглядела достойно
-        return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="55" r="32" fill="${lightColor}" stroke="${darkColor}" stroke-width="2.5"/>
-            <!-- ушки -->
-            <path d="M25 40 L18 25 L35 35 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
-            <path d="M75 40 L82 25 L65 35 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
-            <!-- глазки -->
-            <circle cx="38" cy="52" r="5" fill="white" stroke="${darkColor}" stroke-width="1.5"/>
-            <circle cx="62" cy="52" r="5" fill="white" stroke="${darkColor}" stroke-width="1.5"/>
-            <circle cx="40" cy="53" r="2.5" fill="${darkColor}"/>
-            <circle cx="64" cy="53" r="2.5" fill="${darkColor}"/>
-            <!-- носик -->
-            <ellipse cx="50" cy="64" rx="7" ry="4.5" fill="${accentColor}" stroke="${darkColor}" stroke-width="1.5"/>
-            <!-- ротик -->
-            <path d="M45 70 Q50 76 55 70" fill="none" stroke="${darkColor}" stroke-width="2" stroke-linecap="round"/>
-            <!-- маленький значок что это заглушка -->
-            <text x="50" y="92" font-size="7" text-anchor="middle" fill="${darkColor}" font-family="monospace" opacity="0.7">${filename}</text>
-        </svg>`;
-    }
-
-    // Создаёт элемент с изображением: пробует загрузить внешний SVG, при ошибке показывает заглушку
-    function createSVGElement(creature) {
-        const container = document.createElement('div');
-        container.className = 'svg-container';
-
-        const img = document.createElement('img');
-        const svgUrl = SVG_PATH + creature.filename + '.svg';
-        img.src = svgUrl;
-        img.alt = creature.main;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
-
-        // Обработка успешной загрузки
-        img.onload = () => {
-            container.innerHTML = '';     // очищаем (на случай если была заглушка)
-            container.appendChild(img);
-        };
-
-        // Обработка ошибки: файл не найден — показываем сгенерированную заглушку
-        img.onerror = () => {
-            container.innerHTML = '';     // очищаем
-            const fallbackSvg = generateFallbackSVG(creature.filename, creature.main);
-            container.innerHTML = fallbackSvg;
-            // Можно добавить лёгкую подсказку в консоль (не мешает пользователю)
-            console.log(`📁 [Вселенная Чашелиста] SVG не найден: ${creature.filename}.svg, показана заглушка. Положите свой файл в ${SVG_PATH}`);
-        };
-
-        container.appendChild(img);
-        return container;
-    }
-
-    // Рендер галереи
-    const gallery = document.getElementById('gallery');
-
-    creatures.forEach(creature => {
-        const card = document.createElement('div');
-        card.className = 'creature-card';
-
-        // SVG-контейнер (автоматически загрузит файл из папки или покажет заглушку)
-        const svgElement = createSVGElement(creature);
-
-        // Имя с вариантами
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'creature-name';
-        if (creature.variants) {
-            nameDiv.innerHTML = `${creature.main} <span class="variant-note">(${creature.variants})</span>`;
-        } else {
-            nameDiv.textContent = creature.main;
+        // Генерация заглушки SVG (если файл не найден)
+        function generateFallbackSVG(slug, name) {
+            let hash = 0;
+            for (let i = 0; i < slug.length; i++) {
+                hash = ((hash << 5) - hash) + slug.charCodeAt(i);
+                hash |= 0;
+            }
+            const hue = Math.abs(hash % 360);
+            const lightColor = `hsl(${hue}, 60%, 75%)`;
+            const mainColor = `hsl(${hue}, 70%, 55%)`;
+            const darkColor = `hsl(${hue}, 75%, 35%)`;
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%">
+                <circle cx="50" cy="55" r="32" fill="${lightColor}" stroke="${darkColor}" stroke-width="2.5"/>
+                <path d="M25 40 L18 25 L35 35 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <path d="M75 40 L82 25 L65 35 Z" fill="${mainColor}" stroke="${darkColor}" stroke-width="2"/>
+                <circle cx="38" cy="52" r="5" fill="white" stroke="${darkColor}" stroke-width="1.5"/>
+                <circle cx="62" cy="52" r="5" fill="white" stroke="${darkColor}" stroke-width="1.5"/>
+                <circle cx="40" cy="53" r="2.5" fill="${darkColor}"/>
+                <circle cx="64" cy="53" r="2.5" fill="${darkColor}"/>
+                <ellipse cx="50" cy="64" rx="7" ry="4.5" fill="hsl(${hue + 40}, 75%, 55%)" stroke="${darkColor}" stroke-width="1.5"/>
+                <path d="M45 70 Q50 76 55 70" fill="none" stroke="${darkColor}" stroke-width="2" stroke-linecap="round"/>
+                <text x="50" y="92" font-size="6" text-anchor="middle" fill="${darkColor}" font-family="monospace" opacity="0.6">${slug}</text>
+            </svg>`;
         }
 
-        card.appendChild(svgElement);
-        card.appendChild(nameDiv);
+        // Функция для генерации HTML-кода изображения с fallback
+        function getImageHtml(slug, alt) {
+            const imgSrc = SVG_PATH + slug + ".svg";
+            const fallbackSvg = generateFallbackSVG(slug, alt);
+            return `<img src="${imgSrc}" alt="${alt}" style="width:100%; height:100%; object-fit:contain" onerror="this.onerror=null; this.outerHTML='${fallbackSvg.replace(/'/g, "\\'")}'">`;
+        }
 
-        // Клик по карточке — имитация ссылки (без реального перехода)
-        card.addEventListener('click', () => {
-            console.log(`🚀 [Вселенная Чашелиста] нажато существо: ${creature.main} (файл: ${creature.filename}.svg)`);
-            // Можно раскомментировать alert, если нужно:
-            // alert(`✨ ${creature.main}\n📁 SVG: ${creature.filename}.svg`);
-        });
+        // Рендер галереи
+        function renderGallery() {
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <div class="gallery-page">
+                    <div class="container">
+                        <div class="header">
+                            <h1>Вселенная Чашелиста</h1>
+                            <div class="subhead">нажми на любого персонажа, чтобы узнать его историю</div>
+                        </div>
+                        <div class="gallery" id="galleryGrid"></div>
+                        <div class="footer">энциклопедия существ • каждый персонаж имеет свой SVG-символ</div>
+                    </div>
+                </div>
+            `;
+            
+            const galleryGrid = document.getElementById('galleryGrid');
+            creatures.forEach(creature => {
+                const card = document.createElement('div');
+                card.className = 'creature-card';
+                card.innerHTML = `
+                    <div class="svg-container">
+                        ${getImageHtml(creature.slug, creature.main)}
+                    </div>
+                    <div class="creature-name">${creature.main}</div>
+                    ${creature.variants ? `<div class="variant-note">(${creature.variants})</div>` : ''}
+                `;
+                card.addEventListener('click', () => renderCharacterPage(creature.slug));
+                galleryGrid.appendChild(card);
+            });
+        }
 
-        gallery.appendChild(card);
-    });
+        // Рендер страницы персонажа — только имя, иконка и короткая заглушка описания
+        // (убраны способности, обитание, мировоззрение и строка с SVG-файлом)
+        function renderCharacterPage(slug) {
+            const creature = creatures.find(c => c.slug === slug);
+            if (!creature) {
+                renderGallery();
+                return;
+            }
+            
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <div class="character-page">
+                    <button class="back-link" id="backToGallery">← Ко всем существам</button>
+                    <div class="character-card">
+                        <div class="character-svg">
+                            ${getImageHtml(creature.slug, creature.main)}
+                        </div>
+                        <div class="character-title">
+                            <h2>${creature.main} <span class="placeholder-badge">заглушка</span></h2>
+                            ${creature.variants ? `<div class="aliases">известен также как: ${creature.variants}</div>` : ''}
+                        </div>
+                        <div class="character-description">
+                            <p>📖 ${PLACEHOLDER_TEXT}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('backToGallery').addEventListener('click', renderGallery);
+        }
 
-    // Финальное сообщение в консоль с инструкцией
-    console.log('🌿 Галерея Вселенной Чашелиста загружена.');
-    console.log(`📁 SVG загружаются из папки: "${SVG_PATH}"`);
-    console.log('📄 Ожидаемые имена файлов:');
-    creatures.forEach(c => console.log(`   - ${c.filename}.svg`));
-    console.log('💡 Положите свои SVG-файлы рядом с HTML (или измените SVG_PATH в коде), и они автоматически отобразятся.');
-</script>
+        // Запуск галереи
+        renderGallery();
+    </script>
 </body>
 </html>
