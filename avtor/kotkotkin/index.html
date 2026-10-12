@@ -56,13 +56,46 @@
             0% { text-shadow: 0 0 5px rgba(255,215,0,0.3); }
             100% { text-shadow: 0 0 20px rgba(255,215,0,0.7); }
         }
+        /* ——— HERO С БАННЕРОМ НА ФОНЕ ——— */
         .hero {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             margin-bottom: 2.5rem;
+            padding: 2.5rem 1.5rem 2rem;
+            border-radius: 2rem;
+            overflow: hidden;
+            border: 1px solid rgba(228, 179, 99, 0.3);
+            box-shadow: 0 12px 28px -8px rgba(0,0,0,0.5);
             animation: fadeInUp 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        .hero:hover {
+            transform: translateY(-4px);
+            border-color: rgba(228, 179, 99, 0.7);
+            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.6);
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background:
+                linear-gradient(to bottom, rgba(10,12,16,0.35), rgba(10,12,16,0.85)),
+                url('https://efatcat.github.io/h/avtor/kotkotkin/news.png') center top / cover no-repeat;
+            background-position: center top;
+            transition: transform 0.5s ease;
+        }
+        .hero:hover .hero-bg {
+            transform: scale(1.03);
+        }
+        .hero > *:not(.hero-bg) {
+            position: relative;
+            z-index: 1;
         }
         .author-avatar {
             width: 140px;
@@ -78,8 +111,8 @@
             overflow: hidden;
             background: linear-gradient(135deg, #2a2e3f, #141824);
         }
-        .author-avatar:hover {
-            transform: scale(1.02);
+        .hero:hover .author-avatar {
+            transform: scale(1.03);
             border-color: #e4b363;
             box-shadow: 0 0 45px rgba(228, 179, 99, 0.5);
         }
@@ -298,6 +331,7 @@
             .author-avatar { width: 110px; height: 110px; }
             .music-section { flex-direction: column; align-items: stretch; padding: 1rem 1.2rem; }
             .music-player-wrap { max-width: 100%; }
+            .hero { padding: 2rem 1rem 1.5rem; }
         }
     </style>
 </head>
@@ -310,13 +344,15 @@
 <div class="container">
     <div class="back-link" id="backToHomeBtn">← На главную HLEB GAME</div>
 
-    <div class="hero">
+    <!-- HERO: баннер на фоне, аватар и имя поверх -->
+    <a href="https://3dacat.github.io/konews" target="_blank" rel="noopener noreferrer" class="hero">
+        <div class="hero-bg"></div>
         <div class="author-avatar" id="authorAvatar">
             <img src="https://efatcat.github.io/h/avtor/kotkotkin/gannilone.png" alt="KotKotkin avatar">
         </div>
         <h1 id="authorName">KotKotkin</h1>
         <div class="author-badge">✦ создатель ИИ-игр ✦</div>
-    </div>
+    </a>
 
     <div class="section-title">✦ Игры</div>
     <div class="games-grid" id="authorGamesGrid"></div>
